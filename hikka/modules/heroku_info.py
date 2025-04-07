@@ -5,8 +5,8 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import git
-from hikkatl.tl.types import Message
-from hikkatl.utils import get_display_name
+from telethon.tl.types import Message
+from telethon.utils import get_display_name
 import requests
 import os
 from .. import loader, utils, version
@@ -32,7 +32,7 @@ class HerokuInfoMod(loader.Module):
                 "https://imgur.com/a/7LBPJiq.png",
                 lambda: self.strings("_cfg_banner"),
             ),
-            
+
             loader.ConfigValue(
                 "pp_to_banner",
                 False,

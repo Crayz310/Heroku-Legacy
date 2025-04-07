@@ -6,7 +6,7 @@
 
 import logging
 
-from hikkatl.tl.types import Message
+from telethon.tl.types import Message
 
 from .. import loader, utils
 
