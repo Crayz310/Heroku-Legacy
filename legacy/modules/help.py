@@ -308,6 +308,7 @@ class Help(loader.Module):
                 ]
             hidden_mods.sort(key=extract_name)
 
+
         reply = self.strings("all_header").format(
             len(self.allmodules.modules),
             (
@@ -329,7 +330,7 @@ class Help(loader.Module):
             message,
             (self.config["desc_icon"] + " {}\n <blockquote>{}</blockquote><blockquote>{}</blockquote>").format(
                 reply,
-                "".join((core_ + plain_ + (no_commands_ if force else [])) if not only_hidden else hidden_mods + no_commands_),
+                "".join((core_ + plain_ + (no_commands_ if force else [])) if not only_hidden else no_commands_ + hidden_mods + ),
                 (
                     ""
                     if self.lookup("Loader").fully_loaded
