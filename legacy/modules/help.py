@@ -224,6 +224,25 @@ class Help(loader.Module):
             return
 
         hidden = self.get("hide", [])
+        hidden_mods = []
+        if only_hidden:
+            for mod in hidden:
+                hidden_mods += [
+                    "\n{} <code>{}</code>".format(self.config["empty_emoji"], mod)
+                ]
+
+        reply = self.strings("all_header").format(
+            len(self.allmodules.modules),
+            (
+                0
+                if force
+                else sum(
+                    module.__class__.__name__ in hidden
+                    for module in self.allmodules.modules
+                )
+            ),
+        )
+        shown_warn = False
 
         plain_ = []
         core_ = []
@@ -295,42 +314,27 @@ class Help(loader.Module):
                     core_ += [tmp]
                 else:
                     plain_ += [tmp]
+            elif not shown_warn and (mod.commands or mod.inline_handlers):
+                reply = (
+                    "<i>You have permissions to execute only these"
+                    f" commands</i>\n{reply}"
+                )
+                shown_warn = True
 
         def extract_name(line):
             match = re.search(r'[\U0001F300-\U0001FAFF\U0001F900-\U0001F9FF]*\s*(name.*)', line)
             return match.group(1) if match else line
 
-        hidden_mods = []
-        if only_hidden and (mod.__class__.__name__ in hidden or (len(mod.commands) == 0 and len(mod.inline_handlers) == 0)):
-            for mod in hidden:
-                hidden_mods += [
-                    "\n{} <code>{}</code>".format(self.config["empty_emoji"], mod)
-                ]
-            hidden_mods.sort(key=extract_name)
-
-
-        reply = self.strings("all_header").format(
-            len(self.allmodules.modules),
-            (
-                0
-                if force
-                else sum(
-                    module.__class__.__name__ in hidden
-                    for module in self.allmodules.modules
-                )
-            ),
-            len(no_commands_)
-        )
-
         plain_.sort(key=extract_name)
         core_.sort(key=extract_name)
         no_commands_.sort(key=extract_name)
+        hidden_mods.sort(key=extract_name)
 
         await utils.answer(
             message,
             (self.config["desc_icon"] + " {}\n <blockquote>{}</blockquote><blockquote>{}</blockquote>").format(
                 reply,
-                "".join((core_ + plain_ + (no_commands_ if force else [])) if not only_hidden else no_commands_ + hidden_mods + ),
+                "".join((core_ + plain_ + (no_commands_ if force else [])) if not only_hidden else hidden_mods + no_commands_),
                 (
                     ""
                     if self.lookup("Loader").fully_loaded
